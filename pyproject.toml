@@ -1,0 +1,13 @@
+[project]
+name = "geekbench-report-automation"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "google-cloud-bigquery>=3.38.0",
+    "pandas>=2.3.3",
+    "prefect>=3.6.4",
+    "pygsheets>=2.0.6",
+    "python-dotenv>=1.2.1",
+]
