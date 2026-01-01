@@ -1,7 +1,7 @@
 import pandas as pd
 from prefect import flow, task
 
-from utils.prefect_utility import generate_flow_name
+from src.utils.prefect_utility import generate_flow_name
 
 
 @task
