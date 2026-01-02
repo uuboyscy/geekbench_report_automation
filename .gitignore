@@ -209,3 +209,4 @@ __marimo__/
 # Project
 uv.lock
 .vscode/
+tmp_postgres.password
