@@ -6,8 +6,8 @@ from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 
-from utils.common.googlesheets_utility import load_dataframe_to_google_sheets_worksheet
-from utils.geekbench_report.database_helper import get_score_report_from_df
+from utils.core.database_helper import get_score_report_from_df
+from utils.googlesheets_utility import load_dataframe_to_google_sheets_worksheet
 
 
 def get_update_time_df() -> pd.DataFrame:

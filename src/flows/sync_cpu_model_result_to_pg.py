@@ -60,10 +60,7 @@ import os
 
 import pandas as pd
 
-from utils.geekbench_report.core.geekbench_processor_result_scraper import (
-    GeekbenchProcessorResultScraper,
-)
-from utils.geekbench_report.database_helper import (
+from utils.core.database_helper import (
     delete_duplicated_cpu_model_result_from_pg,
     get_cpu_model_map_from_pg,
     get_last_updated_dates_of_cpu_model_df,
@@ -72,6 +69,7 @@ from utils.geekbench_report.database_helper import (
     update_cpu_model_names,
     update_system_names,
 )
+from utils.core.geekbench.geekbench_processor_result_scraper import GeekbenchProcessorResultScraper
 
 OFFSET_FILE_PATH = "/tmp/sync_cpu_model_result_offset.txt"
 

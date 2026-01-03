@@ -64,13 +64,11 @@ from dataclasses import asdict
 
 import pandas as pd
 
-from utils.geekbench_report.core.geekbench_processor_detail_scraper import (
-    GeekbenchProcessorDetailScraper,
-)
-from utils.geekbench_report.database_helper import (
+from utils.core.database_helper import (
     get_cpu_model_id_and_result_id_for_scraping_details_df,
     load_df_to_pg,
 )
+from utils.core.geekbench.geekbench_processor_detail_scraper import GeekbenchProcessorDetailScraper
 
 
 def dumps_columns(geekbench_processor_detail_dict: dict) -> dict:

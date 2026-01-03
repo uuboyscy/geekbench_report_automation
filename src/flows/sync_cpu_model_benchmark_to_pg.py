@@ -28,7 +28,7 @@ from dataclasses import asdict
 import pandas as pd
 
 from utils.core.database_helper import load_df_to_pg
-from utils.core.geekbench_processor_benchmark_scraper import scrape_page
+from utils.core.geekbench.geekbench_processor_benchmark_scraper import scrape_page
 
 
 def sync_cpu_model_benchmarks_to_pg() -> None:

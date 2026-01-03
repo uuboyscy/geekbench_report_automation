@@ -48,10 +48,8 @@ CREATE TABLE cpu_model_names (
 ```
 """
 
-from utils.geekbench_report.core.geekbench_processor_name_scraper import (
-    GeekbenchProcessorNameScraper,
-)
-from utils.geekbench_report.database_helper import update_cpu_model_names
+from utils.core.database_helper import update_cpu_model_names
+from utils.core.geekbench.geekbench_processor_name_scraper import GeekbenchProcessorNameScraper
 
 
 def sync_cpu_model_names_to_pg() -> None:
