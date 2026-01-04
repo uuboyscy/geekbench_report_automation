@@ -1,34 +1,33 @@
 """
-Sync CPU model record on benchmark page to PostgreSQL.
+Sync CPU model record on benchmark page to BigQuery.
 
 Source:
     - Webpage
         - https://browser.geekbench.com/processor-benchmarks
 Target:
-    - PostgreSQL
+    - BigQuery
         - geekbench_report.cpu_model_benchmarks
+        - Schema:
             ```sql
-            -- Table Definition
-            CREATE TABLE "public"."cpu_model_benchmarks" (
-                "cpu_model" text,
-                "frequency" text,
-                "cores" int8,
-                "single_core_score" int8,
-                "multi_core_score" int8
+            CREATE TABLE `geekbench_report.cpu_model_benchmarks` (
+                cpu_model STRING,
+                frequency STRING,
+                cores INT64,
+                single_core_score INT64,
+                multi_core_score INT64
             );
             ```
 
-Run in n8n container:
-Not scheduled yet.
-
+Run on Prefect Server.
 """
 
 from dataclasses import asdict
 
 import pandas as pd
+from google.cloud.bigquery import Client as BigQueryClient
 from prefect import flow, task
 
-# from utils.core.database_helper import load_df_to_pg
+from utils.bigquery_utility import load_dataframe_to_bigquery
 from utils.core.geekbench.geekbench_processor_benchmark_scraper import (
     GeekbenchProcessorBenchmark,
     scrape_page,
@@ -47,20 +46,20 @@ def t_geekbench_processor_benchmark_to_df(
     return pd.DataFrame([asdict(b) for b in benchmark_list])
 
 @task
-def print_df(df: pd.DataFrame) -> None:
-    print(df)
+def l_load_df_to_bq(df: pd.DataFrame) -> None:
+    load_dataframe_to_bigquery(
+        bigquery_client=BigQueryClient(),
+        dataframe=df,
+        destination="geekbench_report.cpu_model_benchmarks",
+        write_disposition="WRITE_TRUNCATE",
+    )
 
 @flow(name=generate_flow_name())
 def sync_cpu_model_benchmarks_to_pg() -> None:
     """Sync CPU model benchmark data to PostgreSQL database."""
     benchmark_list = e_scrape_page()
     df = t_geekbench_processor_benchmark_to_df(benchmark_list)
-    print_df(df)
-    # load_df_to_pg(
-    #     df,
-    #     table_name="cpu_model_benchmarks",
-    #     if_exists="replace",
-    # )  # or "append" if you want to keep old data
+    l_load_df_to_bq(df)
 
 
 if __name__ == "__main__":
