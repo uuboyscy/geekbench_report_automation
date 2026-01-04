@@ -24,10 +24,9 @@ Run on Prefect Server.
 from dataclasses import asdict
 
 import pandas as pd
-from google.cloud.bigquery import Client as BigQueryClient
 from prefect import flow, task
 
-from utils.bigquery_utility import load_dataframe_to_bigquery
+from utils.core.bigquery_helper import load_df_to_bq
 from utils.core.geekbench.geekbench_processor_benchmark_scraper import (
     GeekbenchProcessorBenchmark,
     scrape_page,
@@ -47,11 +46,10 @@ def t_geekbench_processor_benchmark_to_df(
 
 @task
 def l_load_df_to_bq(df: pd.DataFrame) -> None:
-    load_dataframe_to_bigquery(
-        bigquery_client=BigQueryClient(),
-        dataframe=df,
-        destination="geekbench_report.cpu_model_benchmarks",
-        write_disposition="WRITE_TRUNCATE",
+    load_df_to_bq(
+        df=df,
+        table_name="cpu_model_benchmarks",
+        if_exists="replace",
     )
 
 @flow(name=generate_flow_name())
