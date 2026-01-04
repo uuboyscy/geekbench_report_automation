@@ -209,11 +209,8 @@ def get_cpu_model_id_and_result_id_for_scraping_details_df() -> pd.DataFrame:
         )
     """
     client = get_bq_client()
-    try:
-        return client.query(query).to_dataframe()
-    except Exception:
-        # Return empty DF if failing (e.g. table missing)
-        return pd.DataFrame()
+
+    return client.query(query).to_dataframe()
 
 def delete_cpu_model_result_record_from_date_to_now(
     cpu_model: str,
