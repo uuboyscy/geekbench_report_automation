@@ -92,35 +92,16 @@ def update_cpu_model_names(check_update_list: list[str]) -> None:
     # Find new CPU models that need to be added
     new_models = set(df["cpu_model"]) - existing_model_set
     if new_models:
-        # We need to assign new IDs. In BQ, auto-increment isn't standard.
-        # This function in PG assumes logic elsewhere handles ID or implicit serial? 
-        # Wait, the PG code just loads `new_df` with `cpu_model` column. 
-        # PG table `cpu_model_names` likely has `cpu_model_id SERIAL` or similar.
-        # In BQ, we must generate IDs manually if we want them, or let them be null if schema allows.
-        # BUT `get_cpu_model_map_from_pg` relies on `cpu_model_id`.
-        # Assuming the user handles ID generation or we need to simple MAX(id) + 1 logic here?
-        # The PG `load_df_to_pg` call just appends names. The DB probably handles ID.
-        # For BQ, we should probably check if max ID is needed.
-        # For now, I will mirror the PG logic: just insert names. 
-        # WARNING: BQ doesn't auto-generate IDs. 
-        # I'll modify logic to fetch max ID and increment if possible, or just insert.
-        # Given "implement all function... with BigQuery version", I should probably handle ID generation if BQ requires it.
-        # Let's check PG schema in other files if possible. 
-        # The migration script showed:
-        # { "name": "cpu_model_id", "type": "INTEGER" ... }
-        # So IDs exist.
-        # Be careful: Concurrent runs could duplicate IDs. For a simple script, MAX+1 is okay.
-        
         client = get_bq_client()
         
-        # Get max ID
+        # Get max ID currently in the table to emulate auto-increment
         max_id_query = f"SELECT MAX(cpu_model_id) as max_id FROM `{GEEKBENCH_REPORT_BIGQUERY_DATASET}.cpu_model_names`"
         try:
             res = client.query(max_id_query).to_dataframe()
             current_max = res["max_id"].iloc[0]
             if pd.isna(current_max):
                 current_max = 0
-        except:
+        except Exception:
             current_max = 0
             
         new_df = pd.DataFrame(list(new_models), columns=["cpu_model"])
