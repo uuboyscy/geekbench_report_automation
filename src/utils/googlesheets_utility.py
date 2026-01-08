@@ -5,20 +5,20 @@ GoogleSheets API usage limits:
     https://developers.google.com/sheets/api/limits
 """
 
+import google.auth
 import pandas as pd
 import pygsheets
 from pygsheets.client import Client
 
-BIGQUERY_CREDENTIALS_FILE_PATH = "n8n-user.json"
-
 
 def get_google_sheet_client() -> Client:
-    """Get Google Sheets client."""
-    with open(BIGQUERY_CREDENTIALS_FILE_PATH, "r") as f:
-        service_account_json_str = f.read()
-    return pygsheets.authorize(
-        service_account_json=service_account_json_str,
-    )
+    """Get Google Sheets client using Application Default Credentials."""
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ]
+    credentials, _ = google.auth.default(scopes=scopes)
+    return pygsheets.authorize(custom_credentials=credentials)
 
 
 def load_dataframe_to_google_sheets_worksheet(
