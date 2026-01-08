@@ -246,3 +246,8 @@ def delete_duplicated_cpu_model_result_from_bq() -> None:
     job = client.query(dedup_sql)
     job.result()
     print("Done.")
+
+def get_score_report_from_df() -> pd.DataFrame:
+    from utils.core.sql.mart_average_score_and_benchmark_score import sql
+    client = get_bq_client()
+    return client.query(sql).to_dataframe()
