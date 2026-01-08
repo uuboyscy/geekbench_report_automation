@@ -44,8 +44,9 @@ def load_dataframe_to_bigquery(
     if trans_to_singe_type:
         dataframe = _guarantee_single_type(dataframe)
 
-    bigquery_client.load_table_from_dataframe(
+    job = bigquery_client.load_table_from_dataframe(
         dataframe=dataframe,
         destination=destination,
         job_config=LoadJobConfig(write_disposition=write_disposition),
     )
+    job.result()
