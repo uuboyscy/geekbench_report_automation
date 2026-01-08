@@ -1,11 +1,21 @@
-sql = """-- Base dataset: only the relevant columns
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+GEEKBENCH_REPORT_BIGQUERY_DATASET = os.getenv(
+    "GEEKBENCH_REPORT_BIGQUERY_DATASET", "geekbench_report"
+)
+
+sql = f"""-- Base dataset: only the relevant columns
 with base as (
 	select
 		cpu_model_id,
 		single_core_score,
 		multi_core_score,
 		uploaded
-	from cpu_model_results
+	from `{GEEKBENCH_REPORT_BIGQUERY_DATASET}.cpu_model_results`
 ),
 
 -- Main stats: mean, stddev, median, min/max, and counts
@@ -14,10 +24,10 @@ with_stats as (
 		cpu_model_id,
 		AVG(single_core_score) as mean_single_core_score,
 		STDDEV_POP(single_core_score) as stddev_single_core_score,
-		PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY single_core_score) as median_single_core_score,
+		APPROX_QUANTILES(single_core_score, 100)[OFFSET(50)] as median_single_core_score,
 		AVG(multi_core_score) as mean_multi_core_score,
 		STDDEV_POP(multi_core_score) as stddev_multi_core_score,
-		PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY multi_core_score) as median_multi_core_score,
+		APPROX_QUANTILES(multi_core_score, 100)[OFFSET(50)] as median_multi_core_score,
 		MAX(single_core_score) as max_single_core_score,
 		MIN(multi_core_score) as min_multi_core_score,
 		MAX(uploaded) as max_uploaded,
@@ -54,7 +64,7 @@ cpu_codename_dim as (
 	select
 		cpu_model_id,
 		max(cpu_codename) as cpu_codename
-	from cpu_model_details
+	from `{GEEKBENCH_REPORT_BIGQUERY_DATASET}.cpu_model_details`
 	group by cpu_model_id
 ),
 
@@ -81,9 +91,9 @@ final_table as (
 	from with_stats s
 	left join trimmed t
 		on s.cpu_model_id = t.cpu_model_id
-	left join cpu_model_names dim
+	left join `{GEEKBENCH_REPORT_BIGQUERY_DATASET}.cpu_model_names` dim
 		on s.cpu_model_id = dim.cpu_model_id
-	left join cpu_model_benchmarks b
+	left join `{GEEKBENCH_REPORT_BIGQUERY_DATASET}.cpu_model_benchmarks` b
 		on dim.cpu_model = b.cpu_model
 	left join cpu_codename_dim detail
 		on s.cpu_model_id = detail.cpu_model_id
@@ -91,23 +101,26 @@ final_table as (
 )
 
 select
-	cpu_codename as "Generation",
-	cpu_model as "Processor name",
-	median_single_core_score as "Single core (Median)",
-	median_multi_core_score as "Multi core (Median)",
-	benchmark_single_core_score as "Single core (Ranking)",
-	benchmark_multi_core_score as "Multi core (Ranking)",
-	mean_single_core_score as "Single core (Mean)",
-	mean_multi_core_score as "Multi core (Mean)",
-	trimmed_mean_single_core_score as "Single core (Mean excl. max/min)",
-	trimmed_mean_multi_core_score as "Multi core (Mean excl. max/min)",
-	max_single_core_score as "Max for single core",
-	min_multi_core_score as "Min for Multi core",
-	stddev_single_core_score as "Std for Single core",
-	stddev_multi_core_score as "Std for Multi core",
-	max_uploaded as "The lastest upload",
-	min_uploaded as "The earliest upload",
-	data_count as "Data count"
+	cpu_codename,
+	cpu_model,
+	median_single_core_score,
+	median_multi_core_score,
+	benchmark_single_core_score,
+	benchmark_multi_core_score,
+	mean_single_core_score,
+	mean_multi_core_score,
+	trimmed_mean_single_core_score,
+	trimmed_mean_multi_core_score,
+	max_single_core_score,
+	min_multi_core_score,
+	stddev_single_core_score,
+	stddev_multi_core_score,
+	max_uploaded,
+	min_uploaded,
+	data_count
 from final_table
 order by cpu_codename
-;"""
+"""
+
+if __name__ == "__main__":
+    print(sql)
