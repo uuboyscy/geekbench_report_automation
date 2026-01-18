@@ -119,7 +119,7 @@ select
 	min_uploaded,
 	data_count
 from final_table
-order by cpu_codename
+order by cpu_codename desc
 """
 
 if __name__ == "__main__":
