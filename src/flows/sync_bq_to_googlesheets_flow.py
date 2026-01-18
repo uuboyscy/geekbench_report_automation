@@ -62,8 +62,8 @@ def l_dataframe_to_google_sheets_worksheet(df: pd.DataFrame, spreadsheet_url: st
 
 @flow(name=generate_flow_name())
 def sync_pg_to_googlesheets() -> None:
-    score_report_df = get_score_report_from_df()
     update_time_df = get_update_time_df()
+    score_report_df = e_get_score_report_from_df()
 
     score_report_df = t_rename_column(score_report_df)
     score_report_df = t_convert_type_to_str(score_report_df)
@@ -71,7 +71,7 @@ def sync_pg_to_googlesheets() -> None:
     l_dataframe_to_google_sheets_worksheet(
         df=score_report_df,
         spreadsheet_url="https://docs.google.com/spreadsheets/d/1z9YaGs9yyJadfDJIoXaODJjOqwwMsHkJaEsLQx3J3Zo",
-        worksheet_title="Score (test)",
+        worksheet_title="Score (new)",
         start_address=(2, 1),
         copy_head=False,
     )
@@ -79,7 +79,7 @@ def sync_pg_to_googlesheets() -> None:
     l_dataframe_to_google_sheets_worksheet(
         df=update_time_df,
         spreadsheet_url="https://docs.google.com/spreadsheets/d/1z9YaGs9yyJadfDJIoXaODJjOqwwMsHkJaEsLQx3J3Zo",
-        worksheet_title="Data date (test)",
+        worksheet_title="Data date (new)",
         start_address=(2, 1),
         copy_head=False,
     )
