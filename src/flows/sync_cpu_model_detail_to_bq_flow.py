@@ -114,13 +114,13 @@ def dumps_columns(geekbench_processor_detail_dict: dict) -> dict:
 
     return geekbench_processor_detail_dict
 
-@task
+@task(log_prints=True)
 def e_get_cpu_model_id_and_result_id_for_scraping_details_df() -> pd.DataFrame:
     df = get_cpu_model_id_and_result_id_for_scraping_details_df()
     print(df)
     return df
 
-@task
+@task(log_prints=True)
 def e_fetch_geekbench_processor_details(cpu_model_result_id_df: pd.DataFrame) -> list[dict]:
     geekbench_processor_detail_with_model_id_list = []
     for idx, row in cpu_model_result_id_df.iterrows():
@@ -143,7 +143,7 @@ def e_fetch_geekbench_processor_details(cpu_model_result_id_df: pd.DataFrame) ->
 
     return geekbench_processor_detail_with_model_id_list
 
-@task
+@task(log_prints=True)
 def t_prepare_geekbench_data(geekbench_processor_detail_with_model_id_list: list[dict]) -> list[dict]:
     processed_list = []
 
@@ -225,7 +225,7 @@ def t_prepare_geekbench_data(geekbench_processor_detail_with_model_id_list: list
 
     return processed_list
 
-@task
+@task(log_prints=True)
 def l_load_data_to_bq(data: list[dict]) -> None:
     if not data:
         print("No data to load.")
@@ -250,7 +250,7 @@ def l_load_data_to_bq(data: list[dict]) -> None:
             print(f"Errors: {e.errors}")
         raise e
 
-@flow(name=generate_flow_name())
+@flow(name=generate_flow_name(), log_prints=True)
 def sync_cpu_model_detail_to_bq() -> None:
     cpu_model_result_id_df = e_get_cpu_model_id_and_result_id_for_scraping_details_df()
     print("=====")

@@ -12,20 +12,20 @@ from utils.googlesheets_utility import load_dataframe_to_google_sheets_worksheet
 from utils.prefect_utility import generate_flow_name
 
 
-@task
+@task(log_prints=True)
 def get_update_time_df() -> pd.DataFrame:
     now = datetime.now(timezone(timedelta(hours=8)))
     return pd.DataFrame([{"Last Update": now}])
 
-@task
+@task(log_prints=True)
 def e_get_score_report_from_df() -> pd.DataFrame:
     return get_score_report_from_df()
 
-@task
+@task(log_prints=True)
 def t_convert_type_to_str(df: pd.DataFrame) -> pd.DataFrame:
     return df.fillna("").astype(str)
 
-@task
+@task(log_prints=True)
 def t_rename_column(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(
         columns={
@@ -49,7 +49,7 @@ def t_rename_column(df: pd.DataFrame) -> pd.DataFrame:
         }
     )
 
-@task
+@task(log_prints=True)
 def l_dataframe_to_google_sheets_worksheet(df: pd.DataFrame, spreadsheet_url: str, worksheet_title: str, start_address: tuple, copy_head: bool) -> None:
     load_dataframe_to_google_sheets_worksheet(
         df=df,
@@ -60,7 +60,7 @@ def l_dataframe_to_google_sheets_worksheet(df: pd.DataFrame, spreadsheet_url: st
     )
 
 
-@flow(name=generate_flow_name())
+@flow(name=generate_flow_name(), log_prints=True)
 def sync_pg_to_googlesheets() -> None:
     update_time_df = get_update_time_df()
     score_report_df = e_get_score_report_from_df()

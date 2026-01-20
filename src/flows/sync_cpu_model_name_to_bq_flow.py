@@ -17,17 +17,17 @@ from utils.core.geekbench.geekbench_processor_name_scraper import GeekbenchProce
 from utils.prefect_utility import generate_flow_name
 
 
-@task
+@task(log_prints=True)
 def e_fetch_all_cpu_model_names() -> list[str]:
     scraper = GeekbenchProcessorNameScraper()
     all_cpu_model_list = scraper.scrape_all_cpu_models()
     return all_cpu_model_list
   
-@task
+@task(log_prints=True)
 def l_update_cpu_model_names(check_update_list: list[str]) -> None:
     update_cpu_model_names(check_update_list)
 
-@flow(name=generate_flow_name())
+@flow(name=generate_flow_name(), log_prints=True)
 def sync_cpu_model_names_to_bq() -> None:
     """Sync CPU model names to BigQuery."""
     all_cpu_model_list = e_fetch_all_cpu_model_names()

@@ -34,17 +34,17 @@ from utils.core.geekbench.geekbench_processor_benchmark_scraper import (
 from utils.prefect_utility import generate_flow_name
 
 
-@task
+@task(log_prints=True)
 def e_scrape_page() -> list[GeekbenchProcessorBenchmark]:
     return scrape_page()
 
-@task
+@task(log_prints=True)
 def t_geekbench_processor_benchmark_to_df(
     benchmark_list: list[GeekbenchProcessorBenchmark],
 ) -> pd.DataFrame:
     return pd.DataFrame([asdict(b) for b in benchmark_list])
 
-@task
+@task(log_prints=True)
 def l_load_df_to_bq(df: pd.DataFrame) -> None:
     load_df_to_bq(
         df=df,
@@ -52,7 +52,7 @@ def l_load_df_to_bq(df: pd.DataFrame) -> None:
         if_exists="replace",
     )
 
-@flow(name=generate_flow_name())
+@flow(name=generate_flow_name(), log_prints=True)
 def sync_cpu_model_benchmarks_to_pg() -> None:
     """Sync CPU model benchmark data to PostgreSQL database."""
     benchmark_list = e_scrape_page()

@@ -66,7 +66,7 @@ def delete_offset_file() -> None:
         os.remove(OFFSET_FILE_PATH)
 
 
-@flow(name=generate_flow_name())
+@flow(name=generate_flow_name(), log_prints=True)
 def sync_cpu_model_result_to_bq() -> None:
 
     offset_idx = get_offset()
