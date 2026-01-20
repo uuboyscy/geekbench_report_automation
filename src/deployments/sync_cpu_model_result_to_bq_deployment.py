@@ -8,4 +8,5 @@ if __name__ == "__main__":
         name="main",
         work_pool_name="process-pool",
         cron="0 0 * * 0",
+        tags=["geekbench-report"],
     )

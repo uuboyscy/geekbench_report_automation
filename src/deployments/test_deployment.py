@@ -10,4 +10,5 @@ if __name__ == "__main__":
         # image="my-image",
         # push=False,
         cron="0 * * * *",
+        tags=["test"],
     )
