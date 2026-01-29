@@ -1,3 +1,5 @@
+from prefect.schedules import Cron
+
 from flows.test_flow import test_flow
 
 if __name__ == "__main__":
@@ -9,6 +11,6 @@ if __name__ == "__main__":
         work_pool_name="process-pool",
         # image="my-image",
         # push=False,
-        cron="0 * * * *",
+        schedules=[Cron("0 0 * * *", timezone="Asia/Taipei")],
         tags=["test"],
     )

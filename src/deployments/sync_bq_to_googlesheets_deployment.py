@@ -1,3 +1,5 @@
+from prefect.schedules import Cron
+
 from flows.sync_bq_to_googlesheets_flow import sync_pg_to_googlesheets
 
 if __name__ == "__main__":
@@ -7,6 +9,6 @@ if __name__ == "__main__":
     ).deploy(
         name="main",
         work_pool_name="process-pool",
-        cron="0 8,12,16 * * *",
+        schedules=[Cron("0 8,12,16 * * *", timezone="Asia/Taipei")],
         tags=["geekbench-report"],
     )

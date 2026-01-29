@@ -1,3 +1,5 @@
+from prefect.schedules import Cron
+
 from flows.sync_cpu_model_name_to_bq_flow import sync_cpu_model_names_to_bq
 
 if __name__ == "__main__":
@@ -7,6 +9,6 @@ if __name__ == "__main__":
     ).deploy(
         name="main",
         work_pool_name="process-pool",
-        cron="0 6,10,14 * * *",
+        schedules=[Cron("0 6,10,14 * * *", timezone="Asia/Taipei")],
         tags=["geekbench-report"],
     )
