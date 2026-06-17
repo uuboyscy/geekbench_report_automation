@@ -210,3 +210,4 @@ __marimo__/
 uv.lock
 .vscode/
 tmp_postgres.password
+tmp/
