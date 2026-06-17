@@ -22,7 +22,7 @@ def e_fetch_all_cpu_model_names() -> list[str]:
     scraper = GeekbenchProcessorNameScraper()
     all_cpu_model_list = scraper.scrape_all_cpu_models()
     return all_cpu_model_list
-  
+
 @task(log_prints=True)
 def l_update_cpu_model_names(check_update_list: list[str]) -> None:
     update_cpu_model_names(check_update_list)
