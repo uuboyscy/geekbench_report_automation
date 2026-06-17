@@ -1,13 +1,10 @@
 import re
 from dataclasses import dataclass
 
-import requests
 from bs4 import BeautifulSoup
+from curl_cffi import requests
 
 BASE_URL = "https://browser.geekbench.com/processor-benchmarks"
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
-}
 
 
 @dataclass
@@ -69,7 +66,7 @@ def scrape_page() -> list[GeekbenchProcessorBenchmark]:
     Returns:
         list of GeekbenchProcessorBenchmark
     """
-    response = requests.get(BASE_URL, headers=HEADERS)
+    response = requests.get(BASE_URL, impersonate="chrome")
     soup = BeautifulSoup(response.text, "html.parser")
     single_core_dict = extract_processor_rows_from_div(soup, "single-core")
     multi_core_dict = extract_processor_rows_from_div(soup, "multi-core")
