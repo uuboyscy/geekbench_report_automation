@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: prefect_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 6trcqquq45ualyI3
+      POSTGRES_DB: prefect
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d prefect"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  server:
+    image: prefecthq/prefect:3-python3.13
+    container_name: prefect_server
+    restart: unless-stopped
+    ports:
+      - "4200:4200"
+    command: prefect server start --host 0.0.0.0
+    env_file:
+      - .env
+    environment:
+      # Prefect Server configurations
+      PREFECT_EXPERIMENTAL_EVENTS: "True"
+      PREFECT_API_SERVICES_FLOW_RUN_NOTIFICATIONS_ENABLED: "False"
+      PREFECT_SERVER_API_HOST: "0.0.0.0"
+      PREFECT_API_AUTH_STRING: "howdoyouturnthison:aegis"
+      PREFECT_SERVER_API_AUTH_STRING: "howdoyouturnthison:aegis"
+      
+      # UI and API URLs (using localhost for local migration, change if exposing externally)
+      PREFECT_API_URL: "http://127.0.0.1:4200/api"
+      PREFECT_UI_API_URL: "http://127.0.0.1:4200/api"
+
+      # Configure Prefect to use the Postgres database in this docker-compose
+      PREFECT_API_DATABASE_CONNECTION_URL: "postgresql+asyncpg://postgres:6trcqquq45ualyI3@db:5432/prefect"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
