@@ -26,15 +26,15 @@ services:
     ports:
       - "4200:4200"
     command: prefect server start --host 0.0.0.0
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     environment:
       # Prefect Server configurations
       PREFECT_EXPERIMENTAL_EVENTS: "True"
       PREFECT_API_SERVICES_FLOW_RUN_NOTIFICATIONS_ENABLED: "False"
       PREFECT_SERVER_API_HOST: "0.0.0.0"
-      PREFECT_API_AUTH_STRING: "howdoyouturnthison:aegis"
-      PREFECT_SERVER_API_AUTH_STRING: "howdoyouturnthison:aegis"
+      # PREFECT_API_AUTH_STRING: "howdoyouturnthison:aegis"
+      # PREFECT_SERVER_API_AUTH_STRING: "howdoyouturnthison:aegis"
       
       # UI and API URLs (using localhost for local migration, change if exposing externally)
       PREFECT_API_URL: "http://127.0.0.1:4200/api"
